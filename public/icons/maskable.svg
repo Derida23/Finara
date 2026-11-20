@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <title>Finara</title>
+  <defs>
+    <linearGradient id="body" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f6f1e8"/><stop offset="1" stop-color="#d9d0bf"/>
+    </linearGradient>
+    <linearGradient id="lcd" x1="0" y1="0" x2="0.2" y2="1">
+      <stop offset="0" stop-color="#c9d4b3"/><stop offset="0.7" stop-color="#aebb95"/><stop offset="1" stop-color="#a2af89"/>
+    </linearGradient>
+    <linearGradient id="key" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fefcf8"/><stop offset="1" stop-color="#e2dccf"/>
+    </linearGradient>
+    <linearGradient id="go" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2e7d5f"/><stop offset="1" stop-color="#1d5c43"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" fill="url(#body)"/>
+  <rect x="112" y="136" width="288" height="152" rx="20" fill="#57534b"/>
+  <rect x="122" y="146" width="268" height="132" rx="12" fill="url(#lcd)"/>
+  <rect x="122" y="146" width="268" height="14" rx="7" fill="#000" opacity="0.13"/>
+  <text x="372" y="250" text-anchor="end" font-family="ui-monospace, Menlo, Consolas, monospace" font-weight="700" font-size="96" fill="#1d2717">Rp</text>
+  <rect x="116" y="322" width="84" height="52" rx="12" fill="#b3aa99"/>
+  <rect x="116" y="316" width="84" height="52" rx="12" fill="url(#key)" stroke="#c9c0b0"/>
+  <rect x="214" y="322" width="84" height="52" rx="12" fill="#b3aa99"/>
+  <rect x="214" y="316" width="84" height="52" rx="12" fill="url(#key)" stroke="#c9c0b0"/>
+  <rect x="312" y="322" width="84" height="52" rx="12" fill="#123b2b"/>
+  <rect x="312" y="316" width="84" height="52" rx="12" fill="url(#go)" stroke="#174d38"/>
+</svg>
