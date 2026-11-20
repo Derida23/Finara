@@ -1,0 +1,208 @@
+/* Skeuomorphic theme "Brankas & Mesin Kasir": every texture is CSS or inline SVG, no image files. */
+:root {
+  --color-bg: #e6dfd2;
+  --color-surface: #fbf8f1;
+  --color-text: #2b2620;
+  --color-muted: #5f574d;
+  --color-border: #cfc6b6;
+  --color-primary: #1f6b4e;
+  --color-primary-soft: #dcebe2;
+  --color-on-primary: #ffffff;
+  --color-danger: #a12a1f;
+  --radius: 14px;
+  --radius-pill: 999px;
+  --space: 16px;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+
+  /* Fine grain laid over paper, linen and plastic so flat fills read as real material. */
+  --noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.25 0 0 0 0 0.2 0 0 0 0 0.15 0 0 0 0.09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --key-edge: #b3aa99;
+  --raised:
+    0 3px 0 var(--key-edge), 0 5px 8px rgb(0 0 0 / 0.16), inset 0 1px 0 rgb(255 255 255 / 0.9);
+  --pressed: 0 1px 0 var(--key-edge), inset 0 2px 4px rgb(0 0 0 / 0.2);
+  /* Cream writing paper and blue-black ink for the ledger, passbook and edit card. */
+  --paper: #fbf6e9;
+  --ink: #24406e;
+  /* A few sheets stacked under the top one. */
+  --paper-stack: 0 2px 0 #e9e1cf, 0 4px 0 #ded5c0, 0 6px 14px rgb(0 0 0 / 0.18);
+
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  /* Linen weave: a light horizontal and a dark vertical thread over the grain. */
+  background-image:
+    var(--noise),
+    repeating-linear-gradient(0deg, rgb(255 255 255 / 0.06) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(90deg, rgb(0 0 0 / 0.025) 0 1px, transparent 1px 3px);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 16px;
+  line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+}
+
+#app {
+  max-width: 480px;
+  min-height: 100dvh;
+  margin: 0 auto;
+  padding: max(var(--space), env(safe-area-inset-top)) var(--space)
+    max(var(--space), env(safe-area-inset-bottom));
+}
+
+button,
+input {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+button:disabled {
+  cursor: default;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* A small plastic key; "pressed" means it stays down and lights up green. */
+.chip {
+  min-height: 40px;
+  padding: 8px 14px;
+  border: 1px solid #c9c0b0;
+  border-radius: 10px;
+  background: linear-gradient(#fdfbf7, #e9e3d8);
+  box-shadow: var(--raised);
+  color: var(--color-text);
+  white-space: nowrap;
+  transition:
+    transform 60ms ease,
+    box-shadow 60ms ease;
+}
+
+.chip:active {
+  transform: translateY(2px);
+  box-shadow: var(--pressed);
+}
+
+.chip[aria-pressed="true"] {
+  transform: translateY(2px);
+  border-color: #1d5c43;
+  background: linear-gradient(#2a7a5a, #226a4d);
+  color: var(--color-on-primary);
+  box-shadow:
+    0 1px 0 #164532,
+    inset 0 2px 5px rgb(0 0 0 / 0.35);
+}
+
+/* The big "=" key of the calculator. */
+.primary-button {
+  width: 100%;
+  min-height: 56px;
+  border: 1px solid #174d38;
+  border-radius: var(--radius);
+  background: linear-gradient(#2e7d5f, #1d5c43);
+  color: var(--color-on-primary);
+  font-weight: 700;
+  font-size: 1.05rem;
+  text-shadow: 0 -1px 0 rgb(0 0 0 / 0.35);
+  box-shadow:
+    0 4px 0 #123b2b,
+    0 7px 12px rgb(0 0 0 / 0.25),
+    inset 0 1px 0 rgb(255 255 255 / 0.25);
+  transition:
+    transform 60ms ease,
+    box-shadow 60ms ease;
+}
+
+.primary-button:active:not(:disabled) {
+  transform: translateY(3px);
+  box-shadow:
+    0 1px 0 #123b2b,
+    0 2px 4px rgb(0 0 0 / 0.25),
+    inset 0 2px 4px rgb(0 0 0 / 0.25);
+}
+
+/* A disabled key sits flush with the body: no edge, no shadow, nothing to press. */
+.primary-button:disabled {
+  border-color: #c9c0b0;
+  background: linear-gradient(#e9e3d8, #ddd5c7);
+  color: var(--color-muted);
+  text-shadow: none;
+  box-shadow: inset 0 1px 3px rgb(0 0 0 / 0.12);
+}
+
+.danger-button {
+  width: 100%;
+  min-height: 48px;
+  border: 1px solid var(--color-danger);
+  border-radius: var(--radius);
+  background: linear-gradient(#fdfbf7, #f1e5de);
+  color: var(--color-danger);
+  font-weight: 700;
+  box-shadow:
+    0 3px 0 #c9a79f,
+    0 5px 8px rgb(0 0 0 / 0.14);
+  transition:
+    transform 60ms ease,
+    box-shadow 60ms ease;
+}
+
+.danger-button:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow:
+    0 1px 0 #c9a79f,
+    inset 0 2px 4px rgb(0 0 0 / 0.15);
+}
+
+.danger-button:disabled {
+  opacity: 0.5;
+}
+
+.hint {
+  margin: 0;
+  color: var(--color-muted);
+}
+
+.hint.error,
+.error-text {
+  color: var(--color-danger);
+}
+
+/* Lettering pressed into the surface. */
+.text-button {
+  padding: 8px 4px;
+  border: 0;
+  background: none;
+  color: var(--color-primary);
+  font-weight: 700;
+  text-shadow: 0 1px 0 rgb(255 255 255 / 0.6);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chip,
+  .primary-button,
+  .danger-button {
+    transition: none;
+  }
+
+  .chip:active,
+  .primary-button:active:not(:disabled),
+  .danger-button:active:not(:disabled) {
+    transform: none;
+  }
+}
