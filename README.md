@@ -1,6 +1,6 @@
 # Finara
 
-PWA pencatat pengeluaran harian pribadi. Dibuka dengan PIN 8 digit, data tersimpan di Google Sheets, di-hosting di Vercel.
+PWA pencatat pengeluaran harian pribadi. Dibuka dengan kunci pola 3×3 seperti di Android, data tersimpan di Google Sheets, di-hosting di Vercel.
 
 ## Prasyarat
 
@@ -11,7 +11,7 @@ PWA pencatat pengeluaran harian pribadi. Dibuka dengan PIN 8 digit, data tersimp
 
 1. `pnpm install`
 2. `cp .env.example .env.local`
-3. `pnpm hash-pin` → masukkan PIN dua kali → tempel baris `PIN_HASH=...` ke `.env.local`.
+3. `pnpm set-pattern` → ketik nomor titik pola dua kali (titik bernomor 1–9 seperti tombol telepon, misalnya `1-2-5-8-9`) → tempel baris `PATTERN_HASH=...` ke `.env.local`.
 4. Isi `SESSION_SECRET` dengan hasil `openssl rand -base64 48`.
 5. Siapkan Google Sheets (bagian berikut), lalu jalankan `pnpm setup-sheet`.
 6. `pnpm dev` → buka `http://localhost:4000`; API tersedia di `http://localhost:4000/api/...`.
@@ -46,7 +46,7 @@ Semua endpoint kecuali login butuh header `Authorization: Bearer <token>` dari `
 
 | Method | Path | Isi |
 |---|---|---|
-| POST | `/api/login` | `{ "pin": "12345678" }` → `{ token, expiresAt }` |
+| POST | `/api/login` | `{ "pattern": "12589" }` (nomor titik sesuai urutan digambar) → `{ token, expiresAt }` |
 | GET | `/api/categories` | Kategori aktif, urut sesuai `urutan` |
 | GET | `/api/expenses?month=YYYY-MM` | Pengeluaran satu bulan, terbaru di atas |
 | POST | `/api/expenses` | Tambah. `id` (UUID) dibuat di HP; kiriman ulang dengan `id` yang sama tidak membuat baris ganda |
@@ -62,7 +62,7 @@ Metode bayar yang diterima: `Tunai`, `QRIS/E-wallet`, `Debit`, `Kartu kredit`.
 | `pnpm dev` | Dev server, termasuk API |
 | `pnpm build` | Build produksi ke `dist/` (yang dijalankan Vercel) |
 | `pnpm test` / `pnpm typecheck` / `pnpm lint` | Gate |
-| `pnpm hash-pin` | Membuat `PIN_HASH` untuk PIN baru |
+| `pnpm set-pattern` | Membuat `PATTERN_HASH` untuk pola baru |
 | `pnpm setup-sheet` | Menyiapkan tab spreadsheet |
 
 ## Deploy ke Vercel
@@ -78,8 +78,8 @@ Butuh akun GitHub dan Vercel (keduanya gratis).
    git push -u origin main
    ```
 3. Di vercel.com: **Add New… → Project** → pilih repo tadi → **Import**. Framework terdeteksi sebagai **Vite**; biarkan Build Command `pnpm build` dan Output Directory `dist`.
-4. Di **Environment Variables**, isi lima variabel yang sama dengan `.env.local`: `PIN_HASH`, `SESSION_SECRET`, `GOOGLE_SERVICE_ACCOUNT_EMAIL`, `GOOGLE_PRIVATE_KEY`, `SPREADSHEET_ID`. Untuk `GOOGLE_PRIVATE_KEY`, tempel nilainya **tanpa tanda kutip** di awal dan akhir; `\n` di dalamnya biarkan saja.
-5. Klik **Deploy**, lalu buka `https://<nama-project>.vercel.app` dan masukkan PIN.
+4. Di **Environment Variables**, isi lima variabel yang sama dengan `.env.local`: `PATTERN_HASH`, `SESSION_SECRET`, `GOOGLE_SERVICE_ACCOUNT_EMAIL`, `GOOGLE_PRIVATE_KEY`, `SPREADSHEET_ID`. Untuk `GOOGLE_PRIVATE_KEY`, tempel nilainya **tanpa tanda kutip** di awal dan akhir; `\n` di dalamnya biarkan saja.
+5. Klik **Deploy**, lalu buka `https://<nama-project>.vercel.app` dan gambar polamu.
 
 Setiap `git push` berikutnya ke `main` otomatis di-deploy ulang.
 
