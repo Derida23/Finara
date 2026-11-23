@@ -4,21 +4,14 @@
     onBackspace: () => void;
     showTripleZero?: boolean;
     disabled?: boolean;
-    variant?: "calculator" | "safe";
   }
 
   const DIGITS = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
 
-  let {
-    onKey,
-    onBackspace,
-    showTripleZero = false,
-    disabled = false,
-    variant = "calculator",
-  }: Props = $props();
+  let { onKey, onBackspace, showTripleZero = false, disabled = false }: Props = $props();
 </script>
 
-<div class="numpad" class:safe={variant === "safe"}>
+<div class="numpad">
   {#each DIGITS as digit (digit)}
     <button type="button" class="key" {disabled} onclick={() => onKey(digit)}>{digit}</button>
   {/each}
@@ -87,36 +80,6 @@
       0 1px 0 #26282c,
       0 2px 4px rgb(0 0 0 / 0.25),
       inset 0 2px 4px rgb(0 0 0 / 0.3);
-  }
-
-  /* Brushed-steel keys of the safe door, with engraved digits. */
-  .safe .key {
-    border-color: #7d848c;
-    background:
-      repeating-linear-gradient(90deg, rgb(255 255 255 / 0.08) 0 1px, transparent 1px 3px),
-      linear-gradient(#eef1f4, #b8bec5);
-    color: #2f343a;
-    text-shadow: 0 1px 0 rgb(255 255 255 / 0.7);
-    box-shadow:
-      0 4px 0 #6f767e,
-      0 6px 10px rgb(0 0 0 / 0.3),
-      inset 0 1px 0 rgb(255 255 255 / 0.9);
-  }
-
-  .safe .key:active:not(:disabled) {
-    box-shadow:
-      0 1px 0 #6f767e,
-      0 2px 4px rgb(0 0 0 / 0.3),
-      inset 0 2px 4px rgb(0 0 0 / 0.2);
-  }
-
-  .safe .function {
-    border-color: #4f555c;
-    background:
-      repeating-linear-gradient(90deg, rgb(255 255 255 / 0.06) 0 1px, transparent 1px 3px),
-      linear-gradient(#8e959d, #646b73);
-    color: #f4f6f8;
-    text-shadow: 0 -1px 0 rgb(0 0 0 / 0.4);
   }
 
   .key:disabled {
