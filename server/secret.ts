@@ -1,6 +1,7 @@
 import { randomBytes, scrypt, timingSafeEqual } from "node:crypto";
 
-const PIN_PATTERN = /^\d{8}$/;
+// Hashes the unlock secret (the pattern string). Stored as "scrypt:<salt>:<key>" in PATTERN_HASH.
+
 const HASH_SCHEME = "scrypt";
 const KEY_LENGTH = 32;
 const SALT_LENGTH = 16;
@@ -11,9 +12,9 @@ interface StoredHash {
   key: Buffer;
 }
 
-const deriveKey = (pin: string, salt: Buffer): Promise<Buffer> => {
+const deriveKey = (secret: string, salt: Buffer): Promise<Buffer> => {
   return new Promise((resolve, reject) => {
-    scrypt(pin, salt, KEY_LENGTH, SCRYPT_OPTIONS, (error, key) => {
+    scrypt(secret, salt, KEY_LENGTH, SCRYPT_OPTIONS, (error, key) => {
       if (error) {
         reject(error);
         return;
@@ -27,24 +28,20 @@ const parseStoredHash = (storedHash: string): StoredHash => {
   const [scheme, saltText, keyText, ...rest] = storedHash.split(":");
   const key = Buffer.from(keyText ?? "", "base64url");
   if (scheme !== HASH_SCHEME || !saltText || key.length !== KEY_LENGTH || rest.length > 0) {
-    throw new Error("PIN_HASH is malformed; regenerate it with `pnpm hash-pin`");
+    throw new Error("PATTERN_HASH is malformed; regenerate it with `pnpm set-pattern`");
   }
   return { salt: Buffer.from(saltText, "base64url"), key };
 };
 
-const isPinFormat = (value: unknown): value is string => {
-  return typeof value === "string" && PIN_PATTERN.test(value);
-};
-
-const hashPin = async (pin: string): Promise<string> => {
+const hashSecret = async (secret: string): Promise<string> => {
   const salt = randomBytes(SALT_LENGTH);
-  const key = await deriveKey(pin, salt);
+  const key = await deriveKey(secret, salt);
   return [HASH_SCHEME, salt.toString("base64url"), key.toString("base64url")].join(":");
 };
 
-const verifyPin = async (pin: string, storedHash: string): Promise<boolean> => {
+const verifySecret = async (secret: string, storedHash: string): Promise<boolean> => {
   const { salt, key } = parseStoredHash(storedHash);
-  return timingSafeEqual(await deriveKey(pin, salt), key);
+  return timingSafeEqual(await deriveKey(secret, salt), key);
 };
 
-export { hashPin, isPinFormat, verifyPin };
+export { hashSecret, verifySecret };

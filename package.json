@@ -9,7 +9,7 @@
     "lint": "biome check .",
     "format": "biome check --write .",
     "test": "vitest run",
-    "hash-pin": "node --import ./scripts/resolve-ts.ts scripts/hash-pin.ts",
+    "set-pattern": "node --import ./scripts/resolve-ts.ts scripts/set-pattern.ts",
     "setup-sheet": "node --env-file-if-exists=.env.local --import ./scripts/resolve-ts.ts scripts/setup-sheet.ts"
   },
   "devDependencies": {
