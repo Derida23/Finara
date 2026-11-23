@@ -3,7 +3,7 @@
   import { session } from "./lib/session.svelte";
   import CaptureScreen from "./screens/CaptureScreen.svelte";
   import HistoryScreen from "./screens/HistoryScreen.svelte";
-  import PinScreen from "./screens/PinScreen.svelte";
+  import LockScreen from "./screens/LockScreen.svelte";
   import SummaryScreen from "./screens/SummaryScreen.svelte";
 
   let tab = $state<Tab>("capture");
@@ -30,7 +30,7 @@
   </div>
   <BottomNav bind:tab />
 {:else}
-  <PinScreen />
+  <LockScreen />
 {/if}
 
 <style>

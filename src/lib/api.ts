@@ -75,8 +75,8 @@ const createExpenseId = (): string => {
   ].join("-");
 };
 
-const login = (pin: string): Promise<Session> => {
-  return sendJson<Session>("/login", { method: "POST", body: { pin } });
+const login = (pattern: string): Promise<Session> => {
+  return sendJson<Session>("/login", { method: "POST", body: { pattern } });
 };
 
 const listCategories = async (): Promise<Category[]> => {

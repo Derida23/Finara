@@ -1,20 +1,20 @@
 <script lang="ts">
-  import Numpad from "../components/Numpad.svelte";
+  import PatternPad from "../components/PatternPad.svelte";
   import { ApiError, login } from "../lib/api";
   import { session } from "../lib/session.svelte";
 
-  const PIN_LENGTH = 8;
-  const DIGIT_KEY = /^\d$/;
-  const DOT_INDEXES = Array.from({ length: PIN_LENGTH }, (_, index) => index);
+  // How long a rejected pattern stays red before it is wiped, as on Android.
+  const WRONG_DISPLAY_MS = 1000;
 
-  let pin = $state("");
+  let pad = $state<ReturnType<typeof PatternPad>>();
   let isChecking = $state(false);
+  let isWrong = $state(false);
   let message = $state("");
   let isShaking = $state(false);
 
   const errorMessage = (error: unknown): string => {
-    if (error instanceof ApiError && error.code === "INVALID_PIN") {
-      return "PIN salah. Coba lagi.";
+    if (error instanceof ApiError && error.code === "INVALID_PATTERN") {
+      return "Pola salah. Coba lagi.";
     }
     if (error instanceof ApiError && error.code === "NETWORK") {
       return "Tidak bisa terhubung. Periksa koneksi internet.";
@@ -22,49 +22,26 @@
     return "Server sedang bermasalah. Coba lagi sebentar lagi.";
   };
 
-  const submit = async (value: string) => {
+  const submit = async (pattern: string) => {
     isChecking = true;
     try {
-      session.unlock(await login(value));
+      session.unlock(await login(pattern));
     } catch (error) {
       message = errorMessage(error);
-      pin = "";
+      isWrong = true;
       isShaking = true;
       navigator.vibrate?.(200);
+      setTimeout(() => {
+        isWrong = false;
+        pad?.clear();
+      }, WRONG_DISPLAY_MS);
     } finally {
       isChecking = false;
     }
   };
-
-  const press = (key: string) => {
-    if (isChecking || pin.length >= PIN_LENGTH) {
-      return;
-    }
-    message = "";
-    pin += key;
-    if (pin.length === PIN_LENGTH) {
-      void submit(pin);
-    }
-  };
-
-  const backspace = () => {
-    if (!isChecking) {
-      pin = pin.slice(0, -1);
-    }
-  };
-
-  const onKeydown = (event: KeyboardEvent) => {
-    if (DIGIT_KEY.test(event.key)) {
-      press(event.key);
-    } else if (event.key === "Backspace") {
-      backspace();
-    }
-  };
 </script>
 
-<svelte:window onkeydown={onKeydown} />
-
-<main class="pin-screen">
+<main class="lock-screen">
   <div class="door">
     <header>
       <h1>Finara</h1>
@@ -72,31 +49,26 @@
     </header>
 
     <div class="lock">
-      <p class="instruction">Masukkan PIN</p>
-      <div
-        class="leds"
-        class:shaking={isShaking}
-        class:alarm={message !== "" && !isChecking}
-        role="img"
-        aria-label={`${pin.length} dari ${PIN_LENGTH} digit terisi`}
-        onanimationend={() => (isShaking = false)}
-      >
-        {#each DOT_INDEXES as index (index)}
-          <span class="led" class:on={index < pin.length}></span>
-        {/each}
+      <p class="instruction">Gambar pola untuk membuka</p>
+      <div class="plate" class:shaking={isShaking} onanimationend={() => (isShaking = false)}>
+        <PatternPad
+          bind:this={pad}
+          {isWrong}
+          disabled={isChecking}
+          onStart={() => (message = "")}
+          onTooShort={() => (message = "Sambungkan minimal 4 titik.")}
+          onComplete={submit}
+        />
       </div>
+      <p class="message" class:error={!isChecking} aria-live="polite">
+        {isChecking ? "Memeriksa…" : message}
+      </p>
     </div>
-
-    <p class="message" class:error={!isChecking} aria-live="polite">
-      {isChecking ? "Memeriksa…" : message}
-    </p>
-
-    <Numpad variant="safe" onKey={press} onBackspace={backspace} disabled={isChecking} />
   </div>
 </main>
 
 <style>
-  .pin-screen {
+  .lock-screen {
     min-height: calc(100dvh - 2 * var(--space));
     display: flex;
   }
@@ -157,7 +129,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
   }
 
   .instruction {
@@ -166,38 +138,16 @@
     text-shadow: 0 1px 0 rgb(255 255 255 / 0.5);
   }
 
-  /* Recessed indicator strip; one LED per digit. */
-  .leds {
-    align-self: center;
-    display: flex;
-    gap: 12px;
-    padding: 12px 16px;
-    border-radius: 12px;
-    background: linear-gradient(#2b2f34, #1c1f23);
+  /* A slightly sunken steel plate the nine bolts are set into. */
+  .plate {
+    width: 100%;
+    max-width: 320px;
+    padding: 10px;
+    border-radius: 18px;
+    background: linear-gradient(160deg, #c3c9cf, #a3aab2);
     box-shadow:
-      inset 0 2px 6px rgb(0 0 0 / 0.6),
-      0 1px 0 rgb(255 255 255 / 0.5);
-  }
-
-  .led {
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    background: radial-gradient(circle at 35% 35%, #3b4a40, #18201b);
-    box-shadow: inset 0 1px 2px rgb(0 0 0 / 0.8);
-  }
-
-  .led.on {
-    background: radial-gradient(circle at 35% 35%, #c9ffd9, #2fd469 45%, #138a3d);
-    box-shadow:
-      0 0 8px #2fd469,
-      0 0 2px #2fd469;
-  }
-
-  /* After a wrong PIN every LED glows red until the next digit is typed. */
-  .alarm .led {
-    background: radial-gradient(circle at 35% 35%, #ffd0c9, #e5483a 45%, #8f1d14);
-    box-shadow: 0 0 8px #e5483a;
+      inset 0 2px 6px rgb(0 0 0 / 0.25),
+      0 1px 0 rgb(255 255 255 / 0.6);
   }
 
   .shaking {
